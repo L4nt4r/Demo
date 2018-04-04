@@ -32,3 +32,9 @@
 *.app
 *.suo
 TPlutaDemo.sdf
+*.tlog
+TPlutaDemo/GeneratedFiles/
+*.log
+*.pdb
+*.ilk
+*.opensdf
