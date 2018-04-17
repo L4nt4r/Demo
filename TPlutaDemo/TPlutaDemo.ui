@@ -14,7 +14,7 @@
    <string>TPlutaDemo</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QOpenGLWidget" name="openGLWidget">
+   <widget class="OpenGLWnd" name="openGLWidget">
     <property name="geometry">
      <rect>
       <x>0</x>
@@ -46,6 +46,13 @@
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>OpenGLWnd</class>
+   <extends>QOpenGLWidget</extends>
+   <header location="global">OpenGLWnd.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="TPlutaDemo.qrc"/>
  </resources>

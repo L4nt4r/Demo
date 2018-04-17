@@ -3,6 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_TPlutaDemo.h"
 
+
 class TPlutaDemo : public QMainWindow
 {
 	Q_OBJECT
