@@ -1,5 +1,8 @@
 #pragma once
 #include <QtWidgets>
+#include <qopenglwidget.h>
+#include <cuda_gl_interop.h>
+
 //#include <qopenglwidget.h>
 //#include <QOpenGLExtraFunctions>
 //1#include <QMatrix4x4>
@@ -7,36 +10,35 @@
 //#include <qvector3d.h>
 #define MAX_LIGHTS 8
 
-enum Uniform1{
-	View = 0,
-	Model = 1,
+enum TransformationTypes{
+	Model = 0,
+	View = 1,
 	Perspective = 2,
 	MVP = 3,
 	Camera = 4
 };
 
-enum Uniform2{
-	Mask = 0,
-	Light1 = 1,
-	Light2 = 2,
-	Light3 = 3,
-	Light4 = 4,
-	Light5 = 5,
-	Light6 = 6,
-	Light7 = 7,
-	Light8 = 8
+#define UniformLightsBindingDistance (LightsUniformLocations[4] - LightsUniformLocations[0])
+enum LightsParams{
+	Ambient = 0,
+	Direct = 1,
+	Position = 2,
+	Attenaution = 3,
+	Counter = 5,
+	Mask = 6
 };
+
 
 class OpenGLWnd : public QOpenGLWidget, public QOpenGLExtraFunctions {
 	Q_OBJECT
 public:
-	OpenGLWnd(QWidget *widget = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags()){};		//Default QOpenGLWidget constructor, will call InitializeGL
+	OpenGLWnd(QWidget *widget = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());		//Default QOpenGLWidget constructor, will call InitializeGL
 	~OpenGLWnd(){};																			//Destructor contains cleaning functions 
 
 protected:
 	/*DEFAULT QOPENGLWIDGETS METHODS*/
-	void initializeGL();									// Initialize OpenGL, all starts here
-	void paintGL();											// Paint objects on screen, QT calls this every time when the app sends repaint message
+	void initializeGL(void);									// Initialize OpenGL, all starts here
+	void paintGL(void);											// Paint objects on screen, QT calls this every time when the app sends repaint message
 	void resizeGL(int width, int height);					// Resize window, Qt calls it when the window is resized
 
 	/*INPUT DEVICES EVENTS*/
@@ -47,21 +49,26 @@ protected:
 	void keyReleaseEvent(QKeyEvent *event);					// Keyboard key release event
 
 	/*SHADERS LOADING METHODS*/
-	void loadShaders();
+	void loadShaders(void);
+	void getAccessToUniformBlock(GLuint nProgramID, int nTypesCount, const GLchar **typesNames, GLint *nUniBlockSize, GLint *UniformBlock, GLuint *uniBlockBindingPoint);
+	GLuint OpenGLWnd::newUniformBindingPoint(void);
+	GLuint OpenGLWnd::newUniformBlockObject(GLint nSize, GLuint nBlockBindingPoint);
+	void OpenGLWnd::attachUniformBlockToBP(GLuint programHandle, const GLchar *name, GLuint nBlockBindingPoint);
 
 	/*LIGHTS CONFIGURATION METHODS*/
-	void initLights();
-	void setLightAmbient(GLubyte lightID, QVector4D ambient);
+	void initLights(void);
+	void setLightParam(GLubyte lightID, QVector4D LightParam, LightsParams paramType);
 	void setLightGlobal(GLubyte lightID, QVector4D global);
 	void setLightPosition(GLubyte lightID, QVector4D position);
 	void setLightAttenuation(GLubyte lightID, QVector3D attenaution);
 	void toggleLight(GLubyte lightID, bool on);
 
 	/*CAMERA CONFIGURATION METHODS*/
-	void setModelMatrix();
-	void setViewMatrix();
-	void setPerspectiveMatrix();
-	void setMVPMatrix();
+	void setModelMatrix(QVector3D axis, float angle);
+	void setViewMatrix(void);
+	void setPerspectiveMatrix(void);
+	void setMVPMatrix(void);
+	void resetRotationAndZoom();
 
 	/*ERROR CONTROL*/
 	void checkGLErrors(QString msg);
@@ -69,13 +76,10 @@ protected:
 
 protected:
 	/*LIGHTS CONFIGURATION VARIABLES*/
-	struct Light{
-		QVector4D Ambient;
-		QVector4D Global;
-		QVector4D Position;
-		QVector4D Attenaution;
-	}Lights[MAX_LIGHTS];
-	GLubyte LightsMask;
+	QVector4D Lights[MAX_LIGHTS][4];
+	
+	GLuint LightsCounter;
+	GLuint LightsMask;
 
 	/*CAMERA CONFIGURATION VARIABLES*/
 	QMatrix4x4 ViewMatrix;
@@ -83,10 +87,17 @@ protected:
 	QMatrix4x4 PerspectiveMatrix;
 	QMatrix4x4 MVPMatrix;
 	QVector4D CameraPosition;
+
+	GLfloat glfMoveZ;
+	GLfloat glfRotateX;
+	GLfloat glfRotateY;
 	
 	/*SHADERS VARIABLES*/
-	int LightsUniformLocations[9];
-	int TransformUniformLocations[5];
+	GLint LightsUniformLocations[7];
+	GLint TransformUniformLocations[5];
+	GLuint TransBufferHandle;
+	GLuint LightsBufferHandle;
 	QOpenGLShaderProgram CustomColorInterpolationProgram;
-
+	static GLint MaximumUniformBindingPoints;
+	static GLuint NextUniformBindingPoint;
 };
