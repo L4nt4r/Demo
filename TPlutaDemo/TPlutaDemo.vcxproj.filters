@@ -33,6 +33,9 @@
     <Filter Include="Generated Files\Release">
       <UniqueIdentifier>{e7cd85f1-d493-4440-95e4-b61b78b2b160}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{559fc823-b799-442e-bbff-de28e2fc829a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -59,6 +62,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_OpenGLWnd.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="TPlutaDemo.h">
@@ -78,5 +84,22 @@
     <ClInclude Include="GeneratedFiles\ui_TPlutaDemo.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CustomColorInterpolation.glsl.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="CustomColorInterpolation.glsl.geom">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="CustomColorInterpolation.glsl.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Base.glsl.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Base.glsl.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

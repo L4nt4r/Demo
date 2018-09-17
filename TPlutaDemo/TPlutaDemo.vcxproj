@@ -88,6 +88,7 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OpenGLWnd.cpp" />
+    <ClCompile Include="ShaderHandler.cpp" />
     <ClCompile Include="TPlutaDemo.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -140,6 +141,8 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Base.glsl.frag" />
+    <None Include="Base.glsl.vert" />
     <None Include="CustomColorInterpolation.glsl.frag" />
     <None Include="CustomColorInterpolation.glsl.geom" />
     <None Include="CustomColorInterpolation.glsl.vert" />

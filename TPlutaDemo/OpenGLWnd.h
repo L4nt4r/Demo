@@ -3,6 +3,7 @@
 #include <qopenglwidget.h>
 #include <cuda_gl_interop.h>
 
+
 //#include <qopenglwidget.h>
 //#include <QOpenGLExtraFunctions>
 //1#include <QMatrix4x4>
@@ -26,6 +27,17 @@ enum LightsParams{
 	Attenaution = 3,
 	Counter = 5,
 	Mask = 6
+};
+class CShader : public QOpenGLExtraFunctions{
+
+protected:
+	GLuint Handle;
+
+public:
+	bool CompileShaderFiles(GLenum eShaderType, uint nShaderFilesCount, const char **ShadersFilesNames);
+protected:
+	bool CompileShaderStrings(GLenum eShaderType, int nShaderFilesCount, const GLchar **sourceLines);
+
 };
 
 
@@ -69,7 +81,7 @@ protected:
 	void setPerspectiveMatrix(void);
 	void setMVPMatrix(void);
 	void resetRotationAndZoom();
-
+	void setStage();
 	/*ERROR CONTROL*/
 	void checkGLErrors(QString msg);
 	void checkCudaErrors(QString msg);
@@ -97,7 +109,8 @@ protected:
 	GLint TransformUniformLocations[5];
 	GLuint TransBufferHandle;
 	GLuint LightsBufferHandle;
-	QOpenGLShaderProgram CustomColorInterpolationProgram;
+	QOpenGLShaderProgram* CustomColorInterpolationProgram;
+	QOpenGLShaderProgram* BasicProgram;
 	static GLint MaximumUniformBindingPoints;
 	static GLuint NextUniformBindingPoint;
 };
