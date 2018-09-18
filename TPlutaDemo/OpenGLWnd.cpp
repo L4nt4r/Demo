@@ -4,16 +4,7 @@
 GLint OpenGLWnd::MaximumUniformBindingPoints = 0;
 GLuint OpenGLWnd::NextUniformBindingPoint = 0;
 
-void OpenGLWnd::checkGLErrors(QString msg){
-	GLenum error;
-	if ((error = glGetError()) != GL_NO_ERROR) {
-		QMessageBox::information(
-			this,
-			"GL ERROR",
-			msg + " " + QString::number(error));
-		exit(1);
-	}
-}
+
 OpenGLWnd::OpenGLWnd(QWidget *widget, Qt::WindowFlags f) : QOpenGLWidget(widget, f)
 {
 }
@@ -29,7 +20,7 @@ void OpenGLWnd::resetRotationAndZoom(){
 void OpenGLWnd::initializeGL(){
 	//Qt already prepared for us a window to render data, so we got Display Context, now we need to start openGL
 	
-	initializeOpenGLFunctions();							//We can call this method to let qt creates and connects for us Render Context with window Display Context
+	initializeOpenGLFunctions();							//We call this method to let qt creates and connects for us Render Context with window Display Context
 	if (!context()) {
 		QMessageBox::information(
 			this,
@@ -55,116 +46,49 @@ void OpenGLWnd::initializeGL(){
 }
 
 void OpenGLWnd::loadShaders(){
-	CustomColorInterpolationProgram = new QOpenGLShaderProgram(context());
-	static const int numberOfShadersInProgram1 = 3;
-	
-	static const QString ShaderFiles[numberOfShadersInProgram1] = { "CustomColorInterpolation.glsl.vert", "CustomColorInterpolation.glsl.geom", "CustomColorInterpolation.glsl.frag" };
-	static const QOpenGLShader::ShaderType ShaderTypes[numberOfShadersInProgram1] = { QOpenGLShader::Vertex, QOpenGLShader::Geometry, QOpenGLShader::Fragment };
-
-	for (int i = 0; i < numberOfShadersInProgram1; i++)
-	if (!(CustomColorInterpolationProgram->addShaderFromSourceFile(ShaderTypes[i], ShaderFiles[i]))){
-		QMessageBox::information(
-			this,
-			"SHADERS LOADING ERROR",
-			ShaderFiles[i] + " " + "could not be found or compiled");
-		exit(1);
-	}
-	CustomColorInterpolationProgram->link();
-//	CustomColorInterpolationProgram.bind();
-
-	BasicProgram = new QOpenGLShaderProgram(context());
-	static const int numberOfShadersInProgram2 = 2;
-	static const QString ShaderFiles2[numberOfShadersInProgram2] = { "Base.glsl.vert",  "Base.glsl.frag" };
-	static const QOpenGLShader::ShaderType ShaderTypes2[numberOfShadersInProgram2] = { QOpenGLShader::Vertex, QOpenGLShader::Fragment };
-
-	for (int i = 0; i < numberOfShadersInProgram2; i++)
-	if (!(BasicProgram->addShaderFromSourceFile(ShaderTypes2[i], ShaderFiles2[i]))){
-		QMessageBox::information(
-			this,
-			"SHADERS LOADING ERROR",
-			ShaderFiles[i] + " " + "could not be found or compiled");
-		exit(1);
-	}
-
-	BasicProgram->link();
-	BasicProgram->bind();
-
 	// I could link uniform variables with Qt shader program interface, 
 	// but qt does not support passing arrays of custom values and I would have to pass each lights parameters separately,
 	// furthermore I would lose flexibility of the code, so i will stay here with gl methods.
+	static const int nShaderFiles = 5;
+	static const int nShaderNumber = 5;
+	static const QString strShaderFiles[nShaderFiles] = { "CustomColorInterpolation.glsl.vert", "CustomColorInterpolation.glsl.geom", "CustomColorInterpolation.glsl.frag", "Base.glsl.vert", "Base.glsl.frag" };
 
-	static const GLchar *UniTransBlocksNames[] = { "TransBlock", "TransBlock.mm", "TransBlock.vm", "TransBlock.pm", "TransBlock.mvpm", "TransBlock.eyepos" };
-	static const GLchar *UniLightsBlockNames[] = { "LSBlock", "LSBlock.ls[0].ambient", "LSBlock.ls[0].direct", "LSBlock.ls[0].position", "LSBlock.ls[0].attenuation", "LSBlock.ls[1].ambient", "LSBlock.nls", "LSBlock.mask" };
+	CShader* Shaders[nShaderNumber];
+
+	Shaders[0] = new CShader(this, GL_VERTEX_SHADER, 1, &strShaderFiles[0]);
+	Shaders[1] = new CShader(this, GL_GEOMETRY_SHADER, 1, &strShaderFiles[1]);
+	Shaders[2] = new CShader(this, GL_FRAGMENT_SHADER, 1, &strShaderFiles[2]);
+
+	ShaderPrograms[0] = new CShaderProgram(this, 3, &Shaders[0]);
+
+	Shaders[3] = new CShader(this, GL_VERTEX_SHADER, 1, &strShaderFiles[3]);
+	Shaders[4] = new CShader(this, GL_FRAGMENT_SHADER, 1, &strShaderFiles[4]);
+
+	ShaderPrograms[1] = new CShaderProgram(this, 2, &Shaders[3]);
+
+	static const int TransBlockVariablesCounter = 5;
+	static const int LightsBlockVariablesCounter = 7;
+	static const char *UniTransBlocksNames[TransBlockVariablesCounter + 1] = { "TransBlock", "TransBlock.mm", "TransBlock.vm", "TransBlock.pm", "TransBlock.mvpm", "TransBlock.eyepos" };
+	static const char *UniLightsBlockNames[LightsBlockVariablesCounter + 1] = { "LSBlock", "LSBlock.ls[0].ambient", "LSBlock.ls[0].direct", "LSBlock.ls[0].position", "LSBlock.ls[0].attenuation", "LSBlock.ls[1].ambient", "LSBlock.nls", "LSBlock.mask" };
 
 	GLuint nTransBlockBindingPoint, nLightBlockBindingPoint;
 	GLint nTransUniBlockSize, nLightsUniBlockSize;
 
-	getAccessToUniformBlock(CustomColorInterpolationProgram->programId(), 5, &UniTransBlocksNames[0], &nTransUniBlockSize, TransformUniformLocations, &nTransBlockBindingPoint);
-	getAccessToUniformBlock(CustomColorInterpolationProgram->programId(), 7, &UniLightsBlockNames[0], &nLightsUniBlockSize, LightsUniformLocations, &nLightBlockBindingPoint);
-	attachUniformBlockToBP(BasicProgram->programId(), UniTransBlocksNames[0], nTransBlockBindingPoint);
-	TransBufferHandle = newUniformBlockObject(nTransUniBlockSize, nTransBlockBindingPoint);
-	LightsBufferHandle = newUniformBlockObject(nLightsUniBlockSize, nLightBlockBindingPoint);
-
-	checkGLErrors("LoadMyShaders");
+	TransformationsUBlock = ShaderPrograms[0]->BindNewUniformBlock(TransBlockVariablesCounter, &UniTransBlocksNames[0]);
+	LightsUBlock = ShaderPrograms[0]->BindNewUniformBlock(LightsBlockVariablesCounter, &UniLightsBlockNames[0]);
+	ShaderPrograms[1]->BindToUniformBlock(TransformationsUBlock);
+	
+	checkGLErrors("LoadMyShaders", this);
 	
 }
-void OpenGLWnd::attachUniformBlockToBP(GLuint programHandle, const GLchar *name, GLuint nBlockBindingPoint)
-{
-	GLuint index;
 
-	index = glGetUniformBlockIndex(programHandle, name);
-	glUniformBlockBinding(programHandle, index, nBlockBindingPoint);
-	checkGLErrors("AttachUniformBlockToBP");
-}
-
-GLuint OpenGLWnd::newUniformBlockObject(GLint nSize, GLuint nBlockBindingPoint)
-{
-	GLuint nBuffer;
-	glGenBuffers(1, &nBuffer);
-	glBindBufferBase(GL_UNIFORM_BUFFER, nBlockBindingPoint, nBuffer);
-	glBufferData(GL_UNIFORM_BUFFER, nSize, NULL, GL_DYNAMIC_DRAW);
-	checkGLErrors("NewUniformBlockObject");
-	return nBuffer;
-
-}
-GLuint OpenGLWnd::newUniformBindingPoint(void)
-{
-	if (!MaximumUniformBindingPoints)
-		glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &MaximumUniformBindingPoints);
-	if (NextUniformBindingPoint < MaximumUniformBindingPoints)
-		return NextUniformBindingPoint++;
-	else {
-		QMessageBox::information(
-			this,
-			"GL ERROR",
-			"Uniform binding points limit exhausted\n");
-		exit(1);
-	}
-}
-
-void OpenGLWnd::getAccessToUniformBlock(GLuint nProgramID, int nTypesCount, const GLchar **typesNames, GLint *nUniBlockSize, GLint *UniformBlock, GLuint *uniBlockBindingPoint)
-{
-	GLuint ufi[32];
-
-	GLuint nUniBlockIndex = glGetUniformBlockIndex(nProgramID, typesNames[0]);
-	glGetActiveUniformBlockiv(nProgramID, nUniBlockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, nUniBlockSize);
-	if (nTypesCount > 0) {
-		glGetUniformIndices(nProgramID, nTypesCount, &typesNames[1], ufi);
-		glGetActiveUniformsiv(nProgramID, nTypesCount, ufi, GL_UNIFORM_OFFSET, UniformBlock);
-	}
-
-	*uniBlockBindingPoint = newUniformBindingPoint();
-	glUniformBlockBinding(nProgramID, nUniBlockIndex, *uniBlockBindingPoint);
-	checkGLErrors("GetAccessToUniformBlock");
-
-}
 void OpenGLWnd::setModelMatrix(QVector3D axis, float angle){
 	ModelMatrix.setToIdentity();
 	axis.normalize();
 	ModelMatrix.rotate(angle, axis);
 	glBindBuffer(GL_UNIFORM_BUFFER, TransBufferHandle);
 	glBufferSubData(GL_UNIFORM_BUFFER, TransformUniformLocations[Model], 16 * sizeof(GLfloat), ModelMatrix.data());
-	checkGLErrors("setModelMatrix");
+	checkGLErrors("setModelMatrix", this);
 	setMVPMatrix();
 }
 void OpenGLWnd::setMVPMatrix(){
@@ -172,7 +96,7 @@ void OpenGLWnd::setMVPMatrix(){
 	mvp = PerspectiveMatrix*(ViewMatrix * ModelMatrix);
 	glBindBuffer(GL_UNIFORM_BUFFER, TransBufferHandle);
 	glBufferSubData(GL_UNIFORM_BUFFER, TransformUniformLocations[MVP], 16 * sizeof(GLfloat), mvp.data());
-	checkGLErrors("setNVPMatrix");
+	checkGLErrors("setNVPMatrix", this);
 }
 void OpenGLWnd::setViewMatrix(){
 	ViewMatrix.setToIdentity();
@@ -182,7 +106,7 @@ void OpenGLWnd::setViewMatrix(){
 	glBindBuffer(GL_UNIFORM_BUFFER, TransBufferHandle);
 	glBufferSubData(GL_UNIFORM_BUFFER, TransformUniformLocations[View], 16 * sizeof(GLfloat), ViewMatrix.data());
 	glBufferSubData(GL_UNIFORM_BUFFER, TransformUniformLocations[Camera], 4 * sizeof(GLfloat), &CameraPosition[0]);
-	checkGLErrors("InitViewMatrix");
+	checkGLErrors("InitViewMatrix", this);
 	setMVPMatrix();
 }
 void OpenGLWnd::initLights(){
@@ -216,7 +140,7 @@ void OpenGLWnd::setLightParam(GLubyte lightID, QVector4D LightParam, LightsParam
 	offset = lightID * UniformLightsBindingDistance + LightsUniformLocations[paramType];
 	glBindBuffer(GL_UNIFORM_BUFFER, LightsBufferHandle);
 	glBufferSubData(GL_UNIFORM_BUFFER, offset, 4 * sizeof(GLfloat), &Lights[lightID][paramType]);
-	checkGLErrors("SetLightParam");
+	checkGLErrors("SetLightParam", this);
 }
 void OpenGLWnd::toggleLight(GLubyte lightID, bool lightOn){
 	GLuint mask;
@@ -241,7 +165,7 @@ void OpenGLWnd::toggleLight(GLubyte lightID, bool lightOn){
 	glBindBuffer(GL_UNIFORM_BUFFER, LightsBufferHandle);
 	glBufferSubData(GL_UNIFORM_BUFFER, LightsUniformLocations[Counter], sizeof(GLuint), &LightsCounter);
 	glBufferSubData(GL_UNIFORM_BUFFER, LightsUniformLocations[Mask], sizeof(GLuint), &LightsMask);
-	checkGLErrors("ToggleLight");
+	checkGLErrors("ToggleLight", this);
 }
 ////////////////////////////////////////////////////////
 
@@ -263,19 +187,18 @@ void OpenGLWnd::paintGL(void){
 	glEnd();
 	
 	glFlush();
-	checkGLErrors("Paint");
+	checkGLErrors("Paint", this);;
 }										
 
 // Resize window, Qt calls it when the window is resized, also on first initialization resize
 void OpenGLWnd::resizeGL(int width, int height){
 	glViewport(0, 0, width, height);		//I want draw with glide in entire window.
 	//PrepareVBO();						
-	checkGLErrors("ResizeGL");
 	GLfloat fFrustrumScale = 0.5533f * (float)width / (float)height;		//0.5533	
 	PerspectiveMatrix.setToIdentity();
 	PerspectiveMatrix.frustum(-fFrustrumScale, fFrustrumScale, -0.5533, 0.5533, 5.0, 20.0);
+	checkGLErrors("ResizeGL", this);
 	setStage();
-
 }					
 void OpenGLWnd::setStage()
 {
@@ -285,7 +208,7 @@ void OpenGLWnd::setStage()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_CULL_FACE);
-	checkGLErrors("SetStage");
+	checkGLErrors("SetStage", this);
 	setMVPMatrix();
 	//glUseProgram(CustomColorInterpolationProgram.programId());
 	//glUseProgram(BasicProgram.programId());

@@ -1,14 +1,7 @@
 #pragma once
-#include <QtWidgets>
-#include <qopenglwidget.h>
-#include <cuda_gl_interop.h>
+#include "Shader+DataBridge.h"
 
 
-//#include <qopenglwidget.h>
-//#include <QOpenGLExtraFunctions>
-//1#include <QMatrix4x4>
-//#include <qvector4d.h>
-//#include <qvector3d.h>
 #define MAX_LIGHTS 8
 
 enum TransformationTypes{
@@ -28,20 +21,10 @@ enum LightsParams{
 	Counter = 5,
 	Mask = 6
 };
-class CShader : public QOpenGLExtraFunctions{
-
-protected:
-	GLuint Handle;
-
-public:
-	bool CompileShaderFiles(GLenum eShaderType, uint nShaderFilesCount, const char **ShadersFilesNames);
-protected:
-	bool CompileShaderStrings(GLenum eShaderType, int nShaderFilesCount, const GLchar **sourceLines);
-
-};
 
 
-class OpenGLWnd : public QOpenGLWidget, public QOpenGLExtraFunctions {
+
+class OpenGLWnd : public QOpenGLWidget, protected QOpenGLFunctions {
 	Q_OBJECT
 public:
 	OpenGLWnd(QWidget *widget = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());		//Default QOpenGLWidget constructor, will call InitializeGL
@@ -62,10 +45,7 @@ protected:
 
 	/*SHADERS LOADING METHODS*/
 	void loadShaders(void);
-	void getAccessToUniformBlock(GLuint nProgramID, int nTypesCount, const GLchar **typesNames, GLint *nUniBlockSize, GLint *UniformBlock, GLuint *uniBlockBindingPoint);
-	GLuint OpenGLWnd::newUniformBindingPoint(void);
-	GLuint OpenGLWnd::newUniformBlockObject(GLint nSize, GLuint nBlockBindingPoint);
-	void OpenGLWnd::attachUniformBlockToBP(GLuint programHandle, const GLchar *name, GLuint nBlockBindingPoint);
+	
 
 	/*LIGHTS CONFIGURATION METHODS*/
 	void initLights(void);
@@ -83,8 +63,8 @@ protected:
 	void resetRotationAndZoom();
 	void setStage();
 	/*ERROR CONTROL*/
-	void checkGLErrors(QString msg);
-	void checkCudaErrors(QString msg);
+	//void checkGLErrors(QString msg);
+	//void checkCudaErrors(QString msg);
 
 protected:
 	/*LIGHTS CONFIGURATION VARIABLES*/
@@ -105,12 +85,10 @@ protected:
 	GLfloat glfRotateY;
 	
 	/*SHADERS VARIABLES*/
-	GLint LightsUniformLocations[7];
-	GLint TransformUniformLocations[5];
-	GLuint TransBufferHandle;
-	GLuint LightsBufferHandle;
-	QOpenGLShaderProgram* CustomColorInterpolationProgram;
-	QOpenGLShaderProgram* BasicProgram;
+	CUniformBlock* TransformationsUBlock;
+	CUniformBlock* LightsUBlock;
+	CShaderProgram* ShaderPrograms[2];
+	
 	static GLint MaximumUniformBindingPoints;
 	static GLuint NextUniformBindingPoint;
 };
