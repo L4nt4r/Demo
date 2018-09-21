@@ -91,32 +91,4 @@ protected:
 	CUniformBlock* LightsUBlock;
 	CShaderProgram* ShaderPrograms[2];
 	
-	static GLint MaximumUniformBindingPoints;
-	static GLuint NextUniformBindingPoint;
-
-
-
-
-
-
-protected:
-	//funkcje i zmienne dla testow
-
-	GLuint nShaderHandle[2];
-	GLuint nProgramHandle[1]; 
-
-	GLuint nTransUniBlockIndex;
-	GLint nTransUniBlockSize, *nTransUniformBlock;
-	GLuint nTransBufferHandle;
-	GLuint nTransBlockBindingPoint;
-
-	GLuint CompileShaderFiles(GLenum shaderType, int nShaderFilesCount, const char **ShadersFilesNames);
-	GLuint CompileShaderStrings(GLenum eShaderType, int nShaderFilesCount, const GLchar **sourceLines);
-	GLuint LinkShaderProgram(int nShadersCount, const GLuint *nShaders);
-	GLuint NewUniformBindingPoint(void);
-	void GetAccessToUniformBlock(GLuint nProgram, int nTypesCount, const GLchar **typesNames, GLuint *nUniBlockIndex, GLint *nUniBlockSize, GLint *UniformBlock, GLuint *uniBlockBindingPoint);
-	GLuint NewUniformBlockObject(GLint nSize, GLuint nBlockBindingPoint);
-
-	static GLint maxUniformBindingPoints;
-	static GLuint nextUniformBindingPoint;
 };
