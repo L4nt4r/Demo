@@ -117,6 +117,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_TPlutaDemo.h" />
+    <ClInclude Include="Shader+DataBridge.h" />
     <CustomBuild Include="OpenGLWnd.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing OpenGLWnd.h...</Message>
@@ -141,8 +142,8 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Base.glsl.frag" />
-    <None Include="Base.glsl.vert" />
+    <None Include="base.glsl.frag" />
+    <None Include="base.glsl.vert" />
     <None Include="CustomColorInterpolation.glsl.frag" />
     <None Include="CustomColorInterpolation.glsl.geom" />
     <None Include="CustomColorInterpolation.glsl.vert" />

@@ -84,6 +84,9 @@
     <ClInclude Include="GeneratedFiles\ui_TPlutaDemo.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="Shader+DataBridge.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="CustomColorInterpolation.glsl.frag">
@@ -95,10 +98,10 @@
     <None Include="CustomColorInterpolation.glsl.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Base.glsl.frag">
+    <None Include="base.glsl.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Base.glsl.vert">
+    <None Include="base.glsl.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

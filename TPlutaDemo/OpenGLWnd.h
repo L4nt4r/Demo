@@ -1,14 +1,7 @@
 #pragma once
-#include <QtWidgets>
-#include <qopenglwidget.h>
-#include <cuda_gl_interop.h>
+#include "Shader+DataBridge.h"
 
-
-//#include <qopenglwidget.h>
-//#include <QOpenGLExtraFunctions>
-//1#include <QMatrix4x4>
-//#include <qvector4d.h>
-//#include <qvector3d.h>
+#define PI		3.14159265358979323846f
 #define MAX_LIGHTS 8
 
 enum TransformationTypes{
@@ -19,26 +12,16 @@ enum TransformationTypes{
 	Camera = 4
 };
 
-#define UniformLightsBindingDistance (LightsUniformLocations[4] - LightsUniformLocations[0])
 enum LightsParams{
-	Ambient = 0,
-	Direct = 1,
-	Position = 2,
-	Attenaution = 3,
-	Counter = 5,
-	Mask = 6
+	Counter = 0,
+	Mask = 1,
+	Ambient = 2,
+	Direct = 3,
+	Position = 4,
+	Attenaution = 5
+	
 };
-class CShader : public QOpenGLExtraFunctions{
 
-protected:
-	GLuint Handle;
-
-public:
-	bool CompileShaderFiles(GLenum eShaderType, uint nShaderFilesCount, const char **ShadersFilesNames);
-protected:
-	bool CompileShaderStrings(GLenum eShaderType, int nShaderFilesCount, const GLchar **sourceLines);
-
-};
 
 
 class OpenGLWnd : public QOpenGLWidget, public QOpenGLExtraFunctions {
@@ -62,10 +45,7 @@ protected:
 
 	/*SHADERS LOADING METHODS*/
 	void loadShaders(void);
-	void getAccessToUniformBlock(GLuint nProgramID, int nTypesCount, const GLchar **typesNames, GLint *nUniBlockSize, GLint *UniformBlock, GLuint *uniBlockBindingPoint);
-	GLuint OpenGLWnd::newUniformBindingPoint(void);
-	GLuint OpenGLWnd::newUniformBlockObject(GLint nSize, GLuint nBlockBindingPoint);
-	void OpenGLWnd::attachUniformBlockToBP(GLuint programHandle, const GLchar *name, GLuint nBlockBindingPoint);
+	
 
 	/*LIGHTS CONFIGURATION METHODS*/
 	void initLights(void);
@@ -82,9 +62,11 @@ protected:
 	void setMVPMatrix(void);
 	void resetRotationAndZoom();
 	void setStage();
+	void RefreshDisplay();
+	void OpenGLWnd::SetRotation(double delta_xi, double delta_eta);
 	/*ERROR CONTROL*/
-	void checkGLErrors(QString msg);
-	void checkCudaErrors(QString msg);
+	//void checkGLErrors(QString msg);
+	//void checkCudaErrors(QString msg);
 
 protected:
 	/*LIGHTS CONFIGURATION VARIABLES*/
@@ -103,14 +85,38 @@ protected:
 	GLfloat glfMoveZ;
 	GLfloat glfRotateX;
 	GLfloat glfRotateY;
-	
+	QPoint	qpLastMousePos;						// Last mouse cursor coordinates
 	/*SHADERS VARIABLES*/
-	GLint LightsUniformLocations[7];
-	GLint TransformUniformLocations[5];
-	GLuint TransBufferHandle;
-	GLuint LightsBufferHandle;
-	QOpenGLShaderProgram* CustomColorInterpolationProgram;
-	QOpenGLShaderProgram* BasicProgram;
+	CUniformBlock* TransformationsUBlock;
+	CUniformBlock* LightsUBlock;
+	CShaderProgram* ShaderPrograms[2];
+	
 	static GLint MaximumUniformBindingPoints;
 	static GLuint NextUniformBindingPoint;
+
+
+
+
+
+
+protected:
+	//funkcje i zmienne dla testow
+
+	GLuint nShaderHandle[2];
+	GLuint nProgramHandle[1]; 
+
+	GLuint nTransUniBlockIndex;
+	GLint nTransUniBlockSize, *nTransUniformBlock;
+	GLuint nTransBufferHandle;
+	GLuint nTransBlockBindingPoint;
+
+	GLuint CompileShaderFiles(GLenum shaderType, int nShaderFilesCount, const char **ShadersFilesNames);
+	GLuint CompileShaderStrings(GLenum eShaderType, int nShaderFilesCount, const GLchar **sourceLines);
+	GLuint LinkShaderProgram(int nShadersCount, const GLuint *nShaders);
+	GLuint NewUniformBindingPoint(void);
+	void GetAccessToUniformBlock(GLuint nProgram, int nTypesCount, const GLchar **typesNames, GLuint *nUniBlockIndex, GLint *nUniBlockSize, GLint *UniformBlock, GLuint *uniBlockBindingPoint);
+	GLuint NewUniformBlockObject(GLint nSize, GLuint nBlockBindingPoint);
+
+	static GLint maxUniformBindingPoints;
+	static GLuint nextUniformBindingPoint;
 };
