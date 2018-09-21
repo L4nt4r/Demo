@@ -58,8 +58,9 @@ public:
 	}
 	~CUniformBlock(){ delete[] VariablesLocation; }
 	void SetStructOffsetParams(int nDistance, int nElements) { OffsetPatern = true; Distance = nDistance; ElementsCounter = nElements; }
-	void SetUniformData(const void* data, qopengl_GLsizeiptr size, int index, int column = 0);
-
+	//void SetUniformData(const void* data, qopengl_GLsizeiptr size, int index, int column = 0);
+	void SetUniformData(const void* data, const qopengl_GLsizeiptr &size, const int &index, const int &column = 0);
+	
 	GLint * VariablesLocation;
 	GLuint Buffer;
 protected:

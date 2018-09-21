@@ -3,12 +3,12 @@
 #define MAX_NLIGHTS 8
 
 in NVertex {
-	vec4 Colour;
+	vec4 Color;
 	vec3 Position;
 	vec3 Normal;
 } In;
 
-out vec4 out_Colour;
+out vec4 out_Color;
 
 uniform TransBlock {
 	mat4 mm, vm, pm, mvpm;
@@ -52,57 +52,57 @@ void main ( void )
 	vec4 NewColor;
 
 	float prop;
-	if (In.Colour.w == 0.0f) out_Colour.xyzw = vec4(0.0,0.0,0.0,0.0);
+	if (In.Color.w == 0.0f) out_Color.xyzw = vec4(0.0,0.0,0.0,0.0);
 	else{
-	if (In.Colour.x >= 0.8f){
-			prop = (In.Colour.x - 0.8f)/(0.2f)*0.5;
-			NewColor.xyzw = vec4(1,0,prop,In.Colour.w);	
+	if (In.Color.x >= 0.8f){
+			prop = (In.Color.x - 0.8f)/(0.2f)*0.5;
+			NewColor.xyzw = vec4(1,0,prop,In.Color.w);	
 	}
-	else if (In.Colour.x >=0.45f){
-		prop = (In.Colour.x - 0.45f)/(0.35f);
-		NewColor.xyzw = vec4(1,1 - prop,0,In.Colour.w);
+	else if (In.Color.x >=0.45f){
+		prop = (In.Color.x - 0.45f)/(0.35f);
+		NewColor.xyzw = vec4(1,1 - prop,0,In.Color.w);
 	}
-	else if (In.Colour.x >=0.30f){
-		prop = (In.Colour.x - 0.30f)/(0.15f)*0.5;
-		NewColor.xyzw = vec4(0.5+prop,1,0,In.Colour.w);
+	else if (In.Color.x >=0.30f){
+		prop = (In.Color.x - 0.30f)/(0.15f)*0.5;
+		NewColor.xyzw = vec4(0.5+prop,1,0,In.Color.w);
 	}
-	else if (In.Colour.x >=0.22f){
-		prop = (In.Colour.x - 0.22f)/(0.08f)*0.5;
-		NewColor.xyzw = vec4(prop,1,0,In.Colour.w);
+	else if (In.Color.x >=0.22f){
+		prop = (In.Color.x - 0.22f)/(0.08f)*0.5;
+		NewColor.xyzw = vec4(prop,1,0,In.Color.w);
 	}
-	else if (In.Colour.x >=0.08f) {
-		prop = (In.Colour.x - 0.08f)/(0.14f);
-		NewColor.xyzw = vec4(0,1,1-prop,In.Colour.w);
+	else if (In.Color.x >=0.08f) {
+		prop = (In.Color.x - 0.08f)/(0.14f);
+		NewColor.xyzw = vec4(0,1,1-prop,In.Color.w);
 	}
 	else{
-		prop = In.Colour.x/0.08f;
-		NewColor.xyzw = vec4(0,prop,1 ,In.Colour.w);
+		prop = In.Color.x/0.08f;
+		NewColor.xyzw = vec4(0,prop,1 ,In.Color.w);
 	}
 
 	normal = normalize ( In.Normal );
 	vv = posDifference ( trb.eyepos, In.Position, dist );
 	e = dot ( vv, normal );
-	out_Colour = vec4(0.0);
+	out_Color = vec4(0.0);
 	for ( i = 0, mask = 0x00000001; i < light.nls; i++, mask <<= 1 )
 		if ( (light.mask & mask) != 0 ) {
-			out_Colour += light.ls[i].ambient * NewColor;
+			out_Color += light.ls[i].ambient * NewColor;
 			lv = posDifference ( light.ls[i].position, In.Position, dist );
 			d = dot ( lv, normal );
 			if ( e > 0.0 ) {
 				if ( d > 0.0 ) {
 					if ( light.ls[i].position.w != 0.0 )
 						d *= attFactor ( light.ls[i].attenuation, dist );
-					out_Colour += (d * light.ls[i].direct) * NewColor;
+					out_Color += (d * light.ls[i].direct) * NewColor;
 				}
 			}
 			else {
 				if ( d < 0.0 ) {
 					if ( light.ls[i].position.w != 0.0 )
 						d *= attFactor ( light.ls[i].attenuation, dist );
-					out_Colour -= (d * light.ls[i].direct) * NewColor;
+					out_Color -= (d * light.ls[i].direct) * NewColor;
 				}
 			}
 		}
 	}
-	//out_Colour.a = 1.0;
+	//out_Color = In.Color;
 } /*main*/

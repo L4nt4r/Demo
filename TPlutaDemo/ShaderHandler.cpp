@@ -256,10 +256,8 @@ void CUniformBlock::SetUniformBuffer(){
 
 }
 
-void CUniformBlock::SetUniformData(const void* data, qopengl_GLsizeiptr size, int index, int column){
-	//GLint offset = column * (VariablesLocation[Distance + ElementsCounter] - VariablesLocation[Distance]) + VariablesLocation[index];
+void CUniformBlock::SetUniformData(const void* data, const qopengl_GLsizeiptr &size, const int &index, const int &column){
+	GLint offset = column * (VariablesLocation[Distance + ElementsCounter] - VariablesLocation[Distance]) + VariablesLocation[index];
 	parent->glBindBuffer(GL_UNIFORM_BUFFER, Buffer);
-	//parent->glBufferSubData(GL_UNIFORM_BUFFER, offset, size, &data);
-	parent->glBufferSubData(GL_UNIFORM_BUFFER, VariablesLocation[index], size, &data);
-	checkGLErrors("SetUniformData", parent);
+	parent->glBufferSubData(GL_UNIFORM_BUFFER, offset, size, data);
 }
