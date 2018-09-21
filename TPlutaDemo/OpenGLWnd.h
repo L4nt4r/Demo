@@ -1,7 +1,7 @@
 #pragma once
 #include "Shader+DataBridge.h"
 
-
+#define PI		3.14159265358979323846f
 #define MAX_LIGHTS 8
 
 enum TransformationTypes{
@@ -12,19 +12,19 @@ enum TransformationTypes{
 	Camera = 4
 };
 
-#define UniformLightsBindingDistance (LightsUniformLocations[4] - LightsUniformLocations[0])
 enum LightsParams{
-	Ambient = 0,
-	Direct = 1,
-	Position = 2,
-	Attenaution = 3,
-	Counter = 5,
-	Mask = 6
+	Counter = 0,
+	Mask = 1,
+	Ambient = 2,
+	Direct = 3,
+	Position = 4,
+	Attenaution = 5
+	
 };
 
 
 
-class OpenGLWnd : public QOpenGLWidget, protected QOpenGLFunctions {
+class OpenGLWnd : public QOpenGLWidget, public QOpenGLExtraFunctions {
 	Q_OBJECT
 public:
 	OpenGLWnd(QWidget *widget = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());		//Default QOpenGLWidget constructor, will call InitializeGL
@@ -62,6 +62,8 @@ protected:
 	void setMVPMatrix(void);
 	void resetRotationAndZoom();
 	void setStage();
+	void RefreshDisplay();
+	void OpenGLWnd::SetRotation(double delta_xi, double delta_eta);
 	/*ERROR CONTROL*/
 	//void checkGLErrors(QString msg);
 	//void checkCudaErrors(QString msg);
@@ -83,7 +85,7 @@ protected:
 	GLfloat glfMoveZ;
 	GLfloat glfRotateX;
 	GLfloat glfRotateY;
-	
+	QPoint	qpLastMousePos;						// Last mouse cursor coordinates
 	/*SHADERS VARIABLES*/
 	CUniformBlock* TransformationsUBlock;
 	CUniformBlock* LightsUBlock;
@@ -91,4 +93,30 @@ protected:
 	
 	static GLint MaximumUniformBindingPoints;
 	static GLuint NextUniformBindingPoint;
+
+
+
+
+
+
+protected:
+	//funkcje i zmienne dla testow
+
+	GLuint nShaderHandle[2];
+	GLuint nProgramHandle[1]; 
+
+	GLuint nTransUniBlockIndex;
+	GLint nTransUniBlockSize, *nTransUniformBlock;
+	GLuint nTransBufferHandle;
+	GLuint nTransBlockBindingPoint;
+
+	GLuint CompileShaderFiles(GLenum shaderType, int nShaderFilesCount, const char **ShadersFilesNames);
+	GLuint CompileShaderStrings(GLenum eShaderType, int nShaderFilesCount, const GLchar **sourceLines);
+	GLuint LinkShaderProgram(int nShadersCount, const GLuint *nShaders);
+	GLuint NewUniformBindingPoint(void);
+	void GetAccessToUniformBlock(GLuint nProgram, int nTypesCount, const GLchar **typesNames, GLuint *nUniBlockIndex, GLint *nUniBlockSize, GLint *UniformBlock, GLuint *uniBlockBindingPoint);
+	GLuint NewUniformBlockObject(GLint nSize, GLuint nBlockBindingPoint);
+
+	static GLint maxUniformBindingPoints;
+	static GLuint nextUniformBindingPoint;
 };
