@@ -15,7 +15,9 @@ void checkGLErrors(QString msg, QWidget* Wnd){
 		exit(1);
 	}
 }
-
+CShader::~CShader(){
+	parent->glDeleteShader(Handle);
+}
 CShader::CShader(OpenGLWnd* p, GLenum ShaderType, uint nFiles, const QString *FileNames){
 	parent = p;
 	Type = ShaderType;
@@ -172,6 +174,14 @@ CShaderProgram::CShaderProgram(OpenGLWnd *p, uint ShadersNumber, CShader** Shade
 	this->ShadersCount = ShadersNumber;
 	LinkShaderProgram();
 }
+CShaderProgram::~CShaderProgram(){
+	for (int i = 0; i < ShadersCount; i++){
+		Shaders[i]->LinksCounter--;
+		if (Shaders[i]->LinksCounter == 0)
+			delete Shaders[i];
+	}
+	parent->glDeleteProgram(Handle);
+}
 void CShaderProgram::LinkShaderProgram()
 {
 	
@@ -246,6 +256,13 @@ GLuint CShaderProgram::NewUniformBindingPoint(){
 }
 void CShaderProgram::Bind(){
 	parent->glUseProgram(Handle);
+}
+
+CUniformBlock::~CUniformBlock()
+{ 
+
+	parent->glDeleteBuffers(1, &Buffer);
+	delete[] VariablesLocation;
 }
 void CUniformBlock::SetUniformBuffer(){
 	
