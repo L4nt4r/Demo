@@ -28,7 +28,7 @@ class OpenGLWnd : public QOpenGLWidget, public QOpenGLExtraFunctions {
 	Q_OBJECT
 public:
 	OpenGLWnd(QWidget *widget = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());		//Default QOpenGLWidget constructor, will call InitializeGL
-	~OpenGLWnd(){};																			//Destructor contains cleaning functions 
+	~OpenGLWnd();																			//Destructor contains cleaning functions 
 
 protected:
 	/*DEFAULT QOPENGLWIDGETS METHODS*/
@@ -89,6 +89,10 @@ protected:
 	/*SHADERS VARIABLES*/
 	CUniformBlock* TransformationsUBlock;
 	CUniformBlock* LightsUBlock;
-	CShaderProgram* ShaderPrograms[2];
-	
+	CShaderProgram* ShaderPrograms[2]; 
+	CDataBridge DataBridge;
+public slots:
+	void SetStatusText(QString str);
+signals:
+	void showStatusText(QString str);
 };

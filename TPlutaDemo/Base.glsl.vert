@@ -1,7 +1,7 @@
 #version 420
 
 layout(location=0) in vec4 in_Position;
-
+layout(location=1) in vec4 in_Color;
 
 out Vertex {
 vec4 Color;
@@ -15,5 +15,5 @@ uniform TransBlock {
 void main ( void )
 {
 	gl_Position = trb.mvpm * in_Position; //*/trb.pm * (trb.vm * (trb.mm * in_Position));
-	Out.Color = in_Position;
+	Out.Color = in_Color;
 } /*main*/

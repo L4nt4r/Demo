@@ -3,8 +3,22 @@
 
 
 
-OpenGLWnd::OpenGLWnd(QWidget *widget, Qt::WindowFlags f) : QOpenGLWidget(widget, f)
+OpenGLWnd::OpenGLWnd(QWidget *widget, Qt::WindowFlags f) : QOpenGLWidget(widget, f) , DataBridge(this)
 {
+	connect(&DataBridge, SIGNAL(showStatusText(QString)), this, SLOT(SetStatusText(QString)));
+}
+void OpenGLWnd::SetStatusText(QString str){
+	emit showStatusText(str);
+	
+}
+OpenGLWnd::~OpenGLWnd(){
+	glUseProgram(0);
+	
+	delete ShaderPrograms[0];
+	delete ShaderPrograms[1];
+
+	delete TransformationsUBlock;
+	delete LightsUBlock;
 }
 void OpenGLWnd::resetRotationAndZoom(){
 
@@ -26,6 +40,8 @@ void OpenGLWnd::initializeGL(){
 			"context is not initialized");
 		exit(1);
 	}
+	DataBridge.ConnectToDevice();
+	DataBridge.PrepareVBO();
 	loadShaders();											//Next we need to load shaders programs and declare uniform variables 
 	
 	ViewMatrix.fill(0);										//reseting and initializing other variables
@@ -51,7 +67,8 @@ void OpenGLWnd::loadShaders(){
 	static const int nShaderNumber = 5;
 	static const char *strShaderFiles[] = { "CustomColorInterpolation.glsl.vert", "CustomColorInterpolation.glsl.geom", "CustomColorInterpolation.glsl.frag", "Base.glsl.vert", "Base.glsl.frag" };
 
-	CShader* Shaders[nShaderNumber];
+	CShader** Shaders;
+	Shaders = new CShader*[nShaderNumber];
 	
 	Shaders[0] = new CShader(this, GL_VERTEX_SHADER, 1, &strShaderFiles[0]);
 	Shaders[1] = new CShader(this, GL_GEOMETRY_SHADER, 1, &strShaderFiles[1]);
@@ -171,14 +188,8 @@ void OpenGLWnd::paintGL(void){
 
 	ShaderPrograms[1]->Bind();
 	//glUseProgram(nProgramHandle[0]);
-	glBegin(GL_QUADS);
-	glColor4f(1.0, 1.0, 0.0, 1.0);
-	glNormal3f(0.5, 0.5, 1.0);
-	glVertex3f(-0.5, 0.5, 0.0);
-	glVertex3f(0.5, 0.5, 0.0);
-	glVertex3f(0.5, -0.5, 0.0);
-	glVertex3f(-0.5, -0.5, 0.0);
-	glEnd();
+	
+	DataBridge.paintVAO();
 	
 	glFlush();
 	checkGLErrors("Paint", this);;

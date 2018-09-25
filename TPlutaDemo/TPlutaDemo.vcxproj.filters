@@ -65,6 +65,12 @@
     <ClCompile Include="ShaderHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_Shader+DataBridge.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_Shader+DataBridge.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="TPlutaDemo.h">
@@ -79,13 +85,13 @@
     <CustomBuild Include="OpenGLWnd.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="Shader+DataBridge.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_TPlutaDemo.h">
       <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader+DataBridge.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -104,5 +110,10 @@
     <None Include="base.glsl.vert">
       <Filter>Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="DataBridge.cu">
+      <Filter>Source Files</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>
