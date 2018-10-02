@@ -10,7 +10,6 @@ class TPlutaDemo : public QMainWindow
 
 public:
 	TPlutaDemo(QWidget *parent = Q_NULLPTR);
-
 private:
 	Ui::TPlutaDemoClass ui;
 

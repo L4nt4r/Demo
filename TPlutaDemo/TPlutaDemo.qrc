@@ -1,4 +1,5 @@
 <RCC>
-    <qresource prefix="TPlutaDemo">
-    </qresource>
+  <qresource prefix="TPlutaDemo">
+    <file>beznazwy.png</file>
+  </qresource>
 </RCC>
