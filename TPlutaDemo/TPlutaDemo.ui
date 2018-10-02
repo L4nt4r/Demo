@@ -6,32 +6,189 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1561</width>
+    <width>1550</width>
     <height>942</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>TPlutaDemo</string>
   </property>
-  <widget class="QWidget" name="centralWidget">
+  <widget class="BackWidget" name="centralWidget">
+   <property name="minimumSize">
+    <size>
+     <width>1200</width>
+     <height>800</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QToolTip { color: rgb(251,251,251); font-weight: bold; border: 0px; background-color: rgb(99,196,241); opacity: 240; }
+
+
+
+QPushButton{border: none}
+
+QLabel{ color:white; backgrond-color: none;}
+</string>
+   </property>
    <widget class="OpenGLWnd" name="openGLWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>40</y>
-      <width>1561</width>
-      <height>901</height>
+      <x>450</x>
+      <y>70</y>
+      <width>1171</width>
+      <height>871</height>
      </rect>
     </property>
    </widget>
-  </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
+   <widget class="QWidget" name="leftContainer" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>450</width>
+      <height>921</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(240, 240, 240);</string>
+    </property>
+    <widget class="QWidget" name="foto" native="true">
+     <property name="geometry">
+      <rect>
+       <x>25</x>
+       <y>180</y>
+       <width>400</width>
+       <height>400</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-image: url(:/TPlutaDemo/beznazwy.png);</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="linkButton">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>770</y>
+       <width>311</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 10pt &quot;Arial&quot;;
+color: rgb(0, 0, 255);</string>
+     </property>
+     <property name="text">
+      <string notr="true">www.linkedin.com/in/tomasz-pluta-programista-c</string>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lTomasz">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>610</y>
+       <width>321</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: black;
+font: 40pt &quot;Arial&quot;;</string>
+     </property>
+     <property name="text">
+      <string>TOMASZ</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lPluta">
+     <property name="geometry">
+      <rect>
+       <x>72</x>
+       <y>670</y>
+       <width>271</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: black;
+font: 50pt &quot;Arial&quot;;</string>
+     </property>
+     <property name="text">
+      <string>PLUTA</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lJobTitle">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>740</y>
+       <width>271</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">color: rgb(80,80,80); font: 14pt &quot;Arial&quot;;
+</string>
+     </property>
+     <property name="text">
+      <string> Software Developer</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="TopBar" native="true">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>0</y>
+      <width>1101</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 255, 255);</string>
+    </property>
+    <widget class="QPushButton" name="startMapDemo">
+     <property name="geometry">
+      <rect>
+       <x>730</x>
+       <y>10</y>
+       <width>48</width>
+       <height>48</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Map</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="startFunctionDemo">
+     <property name="geometry">
+      <rect>
+       <x>540</x>
+       <y>10</y>
+       <width>48</width>
+       <height>48</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Function</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="startTextDemo">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>10</y>
+       <width>48</width>
+       <height>48</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Text</string>
+     </property>
+    </widget>
+   </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
@@ -41,6 +198,12 @@
    <class>OpenGLWnd</class>
    <extends>QOpenGLWidget</extends>
    <header location="global">OpenGLWnd.h</header>
+  </customwidget>
+  <customwidget>
+   <class>BackWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">backwidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

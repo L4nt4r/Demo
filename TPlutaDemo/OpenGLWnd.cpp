@@ -50,6 +50,8 @@ void OpenGLWnd::initializeGL(){
 	MVPMatrix.fill(0);
 	CameraPosition = QVector4D(0,0,0,0);
 	memset(&Lights, 0, sizeof(QVector4D)*MAX_LIGHTS*4);
+	LightsCounter = 0;
+	LightsMask = 0;
 	resetRotationAndZoom();
 
 	setModelMatrix(QVector3D(0.0f,1.0f,0.0f), 0.0f);
@@ -146,8 +148,8 @@ void OpenGLWnd::setLightParam(GLubyte lightID, QVector4D LightParam, LightsParam
 
 	if (lightID < 0 || lightID >= MAX_LIGHTS)
 		return;
-	Lights[lightID][paramType] = LightParam;
-	LightsUBlock->SetUniformData(&Lights[lightID][paramType], 4 * sizeof(GLfloat), paramType, lightID);
+	Lights[lightID][paramType-2] = LightParam;
+	LightsUBlock->SetUniformData(&Lights[lightID][paramType-2], 4 * sizeof(GLfloat), paramType, lightID);
 	checkGLErrors("SetLightParam", this);
 }
 void OpenGLWnd::toggleLight(GLubyte lightID, bool lightOn){
@@ -179,14 +181,14 @@ void OpenGLWnd::toggleLight(GLubyte lightID, bool lightOn){
 // Paint objects on screen, QT calls this every time when the app sends repaint message
 void OpenGLWnd::paintGL(void){
 
-	glClearColor(0.0, 0.0, 1.0, 1.0);   // Clear color and depth buffers before each frame
+	glClearColor(1.0, 1.0, 1.0, 1.0);   // Clear color and depth buffers before each frame
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_CULL_FACE);
 
-	ShaderPrograms[1]->Bind();
+	ShaderPrograms[0]->Bind();
 	//glUseProgram(nProgramHandle[0]);
 	
 	DataBridge.paintVAO();

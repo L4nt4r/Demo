@@ -118,7 +118,7 @@ void CDataBridge::ConnectToDevice(){
 void CDataBridge::PrepareVBO(){
 	//qDebug("return from PrepareVBO"); return;
 
-	const int width = 2048;
+	const int width = 1024;
 	const int height = 1024;
 
 	int nGridSize = width * height;
@@ -224,14 +224,14 @@ __global__ void FillVBOTest(GLubyte *Buffer, VertexData *Buffer2){
 	
 	int id = y + x*1024;
 
-	float posx = (float)(x - 1024.0f) / 1024.0f;
+	float posx = (float)(x - 512.0f) / 512.0f;
 	float posy = (float)(y - 512.0f) / 512.0f;
 
 	Buffer2[id].x = posx;
 	Buffer2[id].y = posy;
-	Buffer2[id].z = -sqrt(posx*posx + posy*posy);
+	Buffer2[id].z = sqrt(posx*posx + posy*posy)*sin(posx/posy);
 
-	Buffer[4 * (id)] =  GLubyte((1 - sqrt(posx*posx + posy*posy)) * 255);
+	Buffer[4 * (id)] = GLubyte((0.5+sqrt(posx*posx + posy*posy)*sin(posx / posy)/(2*sqrt(2.0f))) * 255);
 	Buffer[4 * (id)+1] = 0;
 	Buffer[4 * (id)+2] = 0;
 	Buffer[4 * (id)+3] = 255;
