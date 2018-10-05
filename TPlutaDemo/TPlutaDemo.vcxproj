@@ -105,6 +105,7 @@
     <ClCompile Include="OpenGLWnd.cpp" />
     <ClCompile Include="ShaderHandler.cpp" />
     <ClCompile Include="TPlutaDemo.cpp" />
+    <ClCompile Include="ttfParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="TPlutaDemo.h">
@@ -131,6 +132,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ttfParser.h" />
     <CustomBuild Include="BackWidget.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing %(Identity)...</Message>

@@ -80,6 +80,9 @@
     <ClCompile Include="BackWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ttfParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="TPlutaDemo.h">
@@ -104,6 +107,9 @@
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_TPlutaDemo.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ttfParser.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
